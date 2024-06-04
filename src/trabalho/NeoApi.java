@@ -17,9 +17,10 @@ import java.net.URL;
  */
 public class NeoApi {
     private static final String BASE_URL = "https://api.nasa.gov/neo/rest/v1/feed";
-    private static final String API_KEY = "h37uPBAWHTLmSEEeBPUB0Bg7nNtGTVyZRhV7m0Bc"; // Substitua pela sua chave de API
+    private static final String API_KEY = "h37uPBAWHTLmSEEeBPUB0Bg7nNtGTVyZRhV7m0Bc";
 
     public NeoFeed fetchNeoData(String startDate, String endDate) throws IOException {
+        
         String apiUrl = String.format(
             "%s?start_date=%s&end_date=%s&api_key=%s", BASE_URL, startDate, endDate, API_KEY
         );
@@ -36,9 +37,11 @@ public class NeoApi {
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder response = new StringBuilder();
         String line;
+        
         while ((line = reader.readLine()) != null) {
             response.append(line);
         }
+        
         reader.close();
 
         System.out.println(response.toString());

@@ -20,21 +20,12 @@ public class Trabalho {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        try {
-            NeoApi api = new NeoApi();
-            NeoFeed data = api.fetchNeoData("2024-05-20", "2024-05-21");
-            System.out.println(data.toString());
-            System.out.println("Objetos detectados: "+data.getCount());
-            
-            SwingUtilities.invokeLater(() -> {
-                TelaInicial dash = new TelaInicial();
-                dash.setVisible(true);
-            });
-            
-        } catch (IOException ex) {
-            Logger.getLogger(Trabalho.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-}
 
+        SwingUtilities.invokeLater(() -> {
+            TelaInicial dash = new TelaInicial();
+            dash.setVisible(true);
+        });
+
+    }
+
+}

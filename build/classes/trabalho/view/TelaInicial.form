@@ -124,7 +124,9 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="271" max="-2" attributes="0"/>
                   <Component id="timeCounter" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="365" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="68" max="-2" attributes="0"/>
+                  <Component id="detectedObjects" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="255" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -132,7 +134,10 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="78" max="-2" attributes="0"/>
-                  <Component id="timeCounter" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="timeCounter" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="detectedObjects" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace pref="354" max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -149,6 +154,11 @@
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="TelaInicial_TimeCounter"/>
           </AuxValues>
+        </Component>
+        <Component class="javax.swing.JLabel" name="detectedObjects">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="jLabel1"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

@@ -1,20 +1,25 @@
 package trabalho.view;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import trabalho.NeoApi;
+import trabalho.NeoFeed;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author lucas.wojahn
  */
 public class TelaInicial extends javax.swing.JFrame {
+
     private volatile boolean running = true;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
@@ -25,9 +30,9 @@ public class TelaInicial extends javax.swing.JFrame {
         initComponents();
         new Thread(this::updateLabel).start();
         jPanel2.setVisible(false);
-        
+
     }
-    
+
     private void updateLabel() {
         while (running) {
             SwingUtilities.invokeLater(() -> timeCounter.setText(dtf.format(LocalDateTime.now())));
@@ -41,7 +46,7 @@ public class TelaInicial extends javax.swing.JFrame {
             }
         }
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -55,6 +60,7 @@ public class TelaInicial extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jPanel2 = new javax.swing.JPanel();
         timeCounter = new javax.swing.JLabel();
+        detectedObjects = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -74,6 +80,8 @@ public class TelaInicial extends javax.swing.JFrame {
 
         timeCounter.setText("jLabel1");
 
+        detectedObjects.setText("jLabel1");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -81,13 +89,17 @@ public class TelaInicial extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(271, 271, 271)
                 .addComponent(timeCounter)
-                .addContainerGap(365, Short.MAX_VALUE))
+                .addGap(68, 68, 68)
+                .addComponent(detectedObjects)
+                .addContainerGap(255, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(78, 78, 78)
-                .addComponent(timeCounter)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(timeCounter)
+                    .addComponent(detectedObjects))
                 .addContainerGap(354, Short.MAX_VALUE))
         );
 
@@ -151,6 +163,19 @@ public class TelaInicial extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItemDashboard(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDashboard
+        NeoApi api = new NeoApi();
+        NeoFeed data;
+        
+        try {
+            
+            data = api.fetchNeoData("2024-05-20", "2024-05-21");
+            System.out.println(data.toString());
+            System.out.println("Objetos detectados: " + data.getCount());
+            detectedObjects.setText(String.valueOf(data.getCount()));
+            
+        } catch (IOException ex) {
+            Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         jPanel2.setVisible(true);
 
@@ -158,6 +183,7 @@ public class TelaInicial extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel detectedObjects;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
