@@ -19,7 +19,7 @@ public class NeoApi {
     private static final String BASE_URL = "https://api.nasa.gov/neo/rest/v1/feed";
     private static final String API_KEY = "h37uPBAWHTLmSEEeBPUB0Bg7nNtGTVyZRhV7m0Bc";
 
-    public NeoFeed fetchNeoData(String startDate, String endDate) throws IOException {
+    public NeoFeed fetchData(String startDate, String endDate) throws IOException {
         
         String apiUrl = String.format(
             "%s?start_date=%s&end_date=%s&api_key=%s", BASE_URL, startDate, endDate, API_KEY
