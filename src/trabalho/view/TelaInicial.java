@@ -1,6 +1,7 @@
 package trabalho.view;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
@@ -203,8 +204,10 @@ public class TelaInicial extends javax.swing.JFrame {
         NeoFeed data;
         
         try {
-            
-            data = api.buscarDados("2024-05-20", "2024-05-21");
+            String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            System.out.println(currentDate);
+            //Limite de data da API parece ser 7 Dias senão da erro
+            data = api.buscarDados("2024-06-11", currentDate);
             System.out.println(data.toString());
             System.out.println("Objetos detectados: " + data.getCount());
             detectedObjects.setText(String.valueOf(data.getCount()));
