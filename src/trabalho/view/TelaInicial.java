@@ -7,8 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import trabalho.NeoApi;
-import trabalho.NeoFeed;
+import trabalho.dto.NeoApi;
+import trabalho.dto.NeoFeed;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -204,7 +204,7 @@ public class TelaInicial extends javax.swing.JFrame {
         
         try {
             
-            data = api.fetchData("2024-05-20", "2024-05-21");
+            data = api.buscarDados("2024-05-20", "2024-05-21");
             System.out.println(data.toString());
             System.out.println("Objetos detectados: " + data.getCount());
             detectedObjects.setText(String.valueOf(data.getCount()));
