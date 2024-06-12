@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+import trabalho.dto.NearEarthObject;
 import trabalho.dto.NeoApi;
 import trabalho.dto.NeoFeed;
+//import trabalho.dto.NeoObject;;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -202,7 +207,7 @@ public class TelaInicial extends javax.swing.JFrame {
     private void jMenuItemDashboard(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDashboard
         NeoApi api = new NeoApi();
         NeoFeed data;
-        
+
         try {
             String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             System.out.println(currentDate);
@@ -211,7 +216,24 @@ public class TelaInicial extends javax.swing.JFrame {
             System.out.println(data.toString());
             System.out.println("Objetos detectados: " + data.getCount());
             detectedObjects.setText(String.valueOf(data.getCount()));
-            
+
+            List<NearEarthObject> objects = data.getNearEarthObjects().get(currentDate);
+
+            System.out.println(objects);
+
+            DefaultTableModel tableModel = new DefaultTableModel();
+            jTableNearObjects.setModel(tableModel);
+
+            tableModel.addColumn("ID");
+            tableModel.addColumn("Nome");
+            tableModel.addColumn("Magnitude");
+            //TODO Acho que o que ele pede não é a magnitude e sim distancia, tem que ver ainda como extrair isso da API
+            for (int x = 0; x < objects.size(); x++) {
+                tableModel.insertRow(x, new Object[]{objects.get(x).getId(),
+                    objects.get(x).getName(),
+                    String.valueOf(objects.get(x).getAbsoluteMagnitudeH())});
+            }
+
         } catch (IOException ex) {
             Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
         }

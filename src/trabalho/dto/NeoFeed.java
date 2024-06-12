@@ -7,6 +7,8 @@ package trabalho.dto;
 import trabalho.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -18,9 +20,15 @@ public class NeoFeed {
     private int elementCount;
 
     @JsonProperty("near_earth_objects")
-    private NearEarthObjects nearEarthObjects;
+    private Map<String, List<NearEarthObject>> nearEarthObjects;
     
     public int getCount(){
         return this.elementCount;
     }
+
+    public Map<String, List<NearEarthObject>> getNearEarthObjects() {
+        return nearEarthObjects;
+    }
+    
+    
 }
