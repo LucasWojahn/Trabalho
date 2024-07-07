@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -61,28 +62,46 @@ public class TelaInicial extends javax.swing.JFrame {
         try {
             List<NearEarthObject> objects = this.daoObjects.findAll();
 
-            DefaultTableModel tableModel = new DefaultTableModel();
-            jTableNearObjects.setModel(tableModel);
+            this.mountTableWithData(objects);
 
-            tableModel.addColumn("ID");
-            tableModel.addColumn("Nome");
-            tableModel.addColumn("Tamanho Min (KM)");
-            tableModel.addColumn("Tamanho Max (KM)");
-            tableModel.addColumn("Velocidade (Km/h)");
-            tableModel.addColumn("Velocidade (Km/s)");
-            tableModel.addColumn("Risco");
+        } catch (SQLException ex) {
+            Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-            detectedObjects.setText(String.valueOf(objects.size()));
+    }
 
-            //TODO Acho que o que ele pede não é a magnitude e sim distancia, tem que ver ainda como extrair isso da API
-            for (int x = 0; x < objects.size(); x++) {
-                tableModel.insertRow(x, new Object[]{objects.get(x).getId(),
-                    objects.get(x).getName(),
-                    objects.get(x).getDiameter().getKilometer().getMin(),
-                    objects.get(x).getDiameter().getKilometer().getMax(),
-                    objects.get(x).getAproachData().get(0).getVelocity().getKmH(),
-                    objects.get(x).getAproachData().get(0).getVelocity().getKmS(),});
-            }
+    private void mountTableWithData(List<NearEarthObject> objects) {
+        DefaultTableModel tableModel = new DefaultTableModel();
+        jTableNearObjects.setModel(tableModel);
+
+        tableModel.addColumn("ID");
+        tableModel.addColumn("Nome");
+        tableModel.addColumn("Distância");
+        tableModel.addColumn("Tamanho Min (KM)");
+        tableModel.addColumn("Tamanho Max (KM)");
+        tableModel.addColumn("Velocidade (Km/h)");
+        tableModel.addColumn("Velocidade (Km/s)");
+        tableModel.addColumn("Risco");
+
+        detectedObjects.setText(String.valueOf(objects.size()));
+
+        for (int x = 0; x < objects.size(); x++) {
+            tableModel.insertRow(x, new Object[]{objects.get(x).getId(),
+                objects.get(x).getName(),
+                objects.get(x).getAproachData().get(0).getMissDistance().getKilometers(),
+                objects.get(x).getDiameter().getKilometer().getMin(),
+                objects.get(x).getDiameter().getKilometer().getMax(),
+                objects.get(x).getAproachData().get(0).getVelocity().getKmH(),
+                objects.get(x).getAproachData().get(0).getVelocity().getKmS(),});
+        }
+    }
+
+    private void loadDataFromDBOrdered(List<String> campos, String mode) {
+
+        try {
+            List<NearEarthObject> objects = this.daoObjects.findOrderBy(campos, mode);
+            this.mountTableWithData(objects);
+
         } catch (SQLException ex) {
             Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -113,6 +132,7 @@ public class TelaInicial extends javax.swing.JFrame {
         checkBoxVelocity = new java.awt.Checkbox();
         checkBoxHazard = new java.awt.Checkbox();
         jButtonFilter = new javax.swing.JButton();
+        jComboBoxMode = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -175,6 +195,13 @@ public class TelaInicial extends javax.swing.JFrame {
             }
         });
 
+        jComboBoxMode.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ASC", "DESC" }));
+        jComboBoxMode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxModeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelDashLayout = new javax.swing.GroupLayout(jPanelDash);
         jPanelDash.setLayout(jPanelDashLayout);
         jPanelDashLayout.setHorizontalGroup(
@@ -204,9 +231,11 @@ public class TelaInicial extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(checkBoxVelocity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jButtonAttData, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(322, Short.MAX_VALUE))))
+                        .addContainerGap(240, Short.MAX_VALUE))))
         );
         jPanelDashLayout.setVerticalGroup(
             jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -220,21 +249,25 @@ public class TelaInicial extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelDashLayout.createSequentialGroup()
-                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(jPanelDashLayout.createSequentialGroup()
-                                    .addGap(3, 3, 3)
-                                    .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(detectedObjects)))
-                                .addGroup(jPanelDashLayout.createSequentialGroup()
-                                    .addComponent(jButtonFilter)
-                                    .addGap(3, 3, 3)))
-                            .addComponent(checkBoxDistancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(checkBoxVelocity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanelDashLayout.createSequentialGroup()
+                                        .addGap(3, 3, 3)
+                                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(detectedObjects)))
+                                    .addGroup(jPanelDashLayout.createSequentialGroup()
+                                        .addComponent(jButtonFilter)
+                                        .addGap(3, 3, 3)))
+                                .addComponent(checkBoxDistancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(checkBoxVelocity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanelDashLayout.createSequentialGroup()
+                                .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)))
                         .addGap(24, 24, 24)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
                         .addGap(18, 18, 18))
                     .addGroup(jPanelDashLayout.createSequentialGroup()
                         .addComponent(checkBoxSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -353,19 +386,36 @@ public class TelaInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonAttDataActionPerformed
 
     private void jButtonFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFilterActionPerformed
+        List<String> campos = new ArrayList();
+
         if (checkBoxDistancia.getState()) {
             System.out.println("distancia enabled");
+            campos.add("kilometers");
         }
         if (checkBoxHazard.getState()) {
             System.out.println("risco enabled");
+            campos.add("is_potentially_hazardous_asteroid");
+
         }
         if (checkBoxSize.getState()) {
             System.out.println("tamanho enabled");
+            campos.add("max_diameter");
+
         }
         if (checkBoxVelocity.getState()) {
             System.out.println("velocidade enabled");
+            campos.add("kilometers_second");
+
         }
+
+        String mode = (String) jComboBoxMode.getSelectedItem();
+
+        this.loadDataFromDBOrdered(campos, mode);
     }//GEN-LAST:event_jButtonFilterActionPerformed
+
+    private void jComboBoxModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxModeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBoxModeActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -376,6 +426,7 @@ public class TelaInicial extends javax.swing.JFrame {
     private javax.swing.JLabel detectedObjects;
     private javax.swing.JButton jButtonAttData;
     private javax.swing.JButton jButtonFilter;
+    private javax.swing.JComboBox<String> jComboBoxMode;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;

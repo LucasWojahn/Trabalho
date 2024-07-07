@@ -80,6 +80,59 @@ public class NearEarthObjectDao {
         }
     }
 
+    public List<NearEarthObject> findOrderBy(List<String> campos, String mode) throws SQLException {
+        List<NearEarthObject> neos = new ArrayList<>();
+        String sql = "SELECT *  FROM NearEarthObject neo JOIN AproachData ad ON neo.id = ad.neo_id ORDER BY ";
+
+        for (int x = 0; x < campos.size(); x++) {
+            if (x == campos.size() - 1) {
+                sql += campos.get(x);
+            } else {
+                sql += campos.get(x) + ", ";
+            }
+        }
+
+        sql += " " + mode + ";";
+        System.out.println(sql);
+
+        try (java.sql.Connection conn = Connection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql); ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                List<AproachData> aproachData = new ArrayList();
+
+                AproachData aproach = new AproachData();
+                Velocity velocity = new Velocity();
+                velocity.setKmH(String.valueOf(resultSet.getDouble("kilometers_hour")));
+                velocity.setKmS(String.valueOf(resultSet.getDouble("kilometers_second")));
+                aproach.setVelocity(velocity);
+
+                MissDistance distance = new MissDistance();
+                distance.setKilometers(String.valueOf(resultSet.getDouble("kilometers")));
+                aproach.setMissDistance(distance);
+
+                aproach.setAproachDate(String.valueOf(resultSet.getDate("aproachDate")));
+
+                aproachData.add(aproach);
+
+                NearEarthObject neo = new NearEarthObject();
+                neo.setId(resultSet.getString("id"));
+                neo.setName(resultSet.getString("name"));
+
+                Diameter diameter = new Diameter();
+                Kilometers kilometer = new Kilometers();
+
+                kilometer.setMax(String.valueOf(resultSet.getDouble("max_diameter")));
+                kilometer.setMin(String.valueOf(resultSet.getDouble("min_diameter")));
+                diameter.setKilometer(kilometer);
+
+                neo.setDiameter(diameter);
+                neo.setAproachData(aproachData);
+
+                neos.add(neo);
+            }
+        }
+        return neos;
+    }
+
     public List<NearEarthObject> findAll() throws SQLException {
         List<NearEarthObject> neos = new ArrayList<>();
         String sql = "SELECT * FROM NearEarthObject";
