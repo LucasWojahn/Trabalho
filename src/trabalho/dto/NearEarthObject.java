@@ -7,12 +7,13 @@ package trabalho.dto;
 import trabalho.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
 /**
  *
  * @author lucas.wojahn
  */
-@JsonIgnoreProperties(ignoreUnknown = true) // Ignore extra fields from API
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class NearEarthObject {
 
     @JsonProperty("id")
@@ -30,15 +31,50 @@ public class NearEarthObject {
     @JsonProperty("absolute_magnitude_h")
     private double absoluteMagnitudeH;
 
-//    @JsonProperty("estimated_diameter")
-//    private EstimatedDiameter estimatedDiameter;
     @JsonProperty("is_potentially_hazardous_asteroid")
     private boolean isPotentiallyHazardousAsteroid;
 
-//    @JsonProperty("close_approach_data")
-//    private CloseApproachData[] closeApproachData;
     @JsonProperty("is_sentry_object")
     private boolean isSentryObject;
+    
+    @JsonProperty("estimated_diameter")
+    private Diameter diameter;
+    
+    @JsonProperty("close_approach_data")
+    private List<AproachData> aproachData;
+
+    
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setNeoReferenceId(String neoReferenceId) {
+        this.neoReferenceId = neoReferenceId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNasaJplUrl(String nasaJplUrl) {
+        this.nasaJplUrl = nasaJplUrl;
+    }
+
+    public void setAbsoluteMagnitudeH(double absoluteMagnitudeH) {
+        this.absoluteMagnitudeH = absoluteMagnitudeH;
+    }
+
+    public void setIsPotentiallyHazardousAsteroid(boolean isPotentiallyHazardousAsteroid) {
+        this.isPotentiallyHazardousAsteroid = isPotentiallyHazardousAsteroid;
+    }
+
+    public void setIsSentryObject(boolean isSentryObject) {
+        this.isSentryObject = isSentryObject;
+    }
+
+    public void setAproachData(List<AproachData> aproachData) {
+        this.aproachData = aproachData;
+    }
 
     public String getId() {
         return id;
@@ -67,5 +103,21 @@ public class NearEarthObject {
     public boolean isIsSentryObject() {
         return isSentryObject;
     }
+    
+    public List<AproachData> getAproachData() {
+        return aproachData;
+    }
 
+    public Diameter getDiameter() {
+        return diameter;
+    }
+
+    public void setDiameter(Diameter diameter) {
+        this.diameter = diameter;
+    }
+    
+    
+
+    
+    
 }

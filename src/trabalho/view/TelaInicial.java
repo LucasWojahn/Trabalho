@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
@@ -30,14 +31,15 @@ public class TelaInicial extends javax.swing.JFrame {
 
     private volatile boolean running = true;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    private final NearEarthObjectDao daoObjects = new NearEarthObjectDao();
 
     /**
      * Creates new form Dashboard
      */
     public TelaInicial() {
         initComponents();
+        loadDataFromDB();
         new Thread(this::updateLabel).start();
-        jPanel2.setVisible(false);
 
     }
 
@@ -54,6 +56,39 @@ public class TelaInicial extends javax.swing.JFrame {
         }
     }
 
+    private void loadDataFromDB() {
+
+        try {
+            List<NearEarthObject> objects = this.daoObjects.findAll();
+
+            DefaultTableModel tableModel = new DefaultTableModel();
+            jTableNearObjects.setModel(tableModel);
+
+            tableModel.addColumn("ID");
+            tableModel.addColumn("Nome");
+            tableModel.addColumn("Tamanho Min (KM)");
+            tableModel.addColumn("Tamanho Max (KM)");
+            tableModel.addColumn("Velocidade (Km/h)");
+            tableModel.addColumn("Velocidade (Km/s)");
+            tableModel.addColumn("Risco");
+
+            detectedObjects.setText(String.valueOf(objects.size()));
+
+            //TODO Acho que o que ele pede não é a magnitude e sim distancia, tem que ver ainda como extrair isso da API
+            for (int x = 0; x < objects.size(); x++) {
+                tableModel.insertRow(x, new Object[]{objects.get(x).getId(),
+                    objects.get(x).getName(),
+                    objects.get(x).getDiameter().getKilometer().getMin(),
+                    objects.get(x).getDiameter().getKilometer().getMax(),
+                    objects.get(x).getAproachData().get(0).getVelocity().getKmH(),
+                    objects.get(x).getAproachData().get(0).getVelocity().getKmS(),});
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -65,13 +100,19 @@ public class TelaInicial extends javax.swing.JFrame {
 
         jMenu3 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jPanel2 = new javax.swing.JPanel();
+        jPanelDash = new javax.swing.JPanel();
         timeCounter = new javax.swing.JLabel();
         detectedObjects = new javax.swing.JLabel();
         label1 = new java.awt.Label();
         label2 = new java.awt.Label();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableNearObjects = new javax.swing.JTable();
+        jButtonAttData = new javax.swing.JButton();
+        checkBoxDistancia = new java.awt.Checkbox();
+        checkBoxSize = new java.awt.Checkbox();
+        checkBoxVelocity = new java.awt.Checkbox();
+        checkBoxHazard = new java.awt.Checkbox();
+        jButtonFilter = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -89,7 +130,7 @@ public class TelaInicial extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanelDash.setBorder(javax.swing.BorderFactory.createTitledBorder("Dashboard"));
 
         timeCounter.setText("jLabel1");
 
@@ -112,43 +153,99 @@ public class TelaInicial extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTableNearObjects);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(97, 97, 97)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 488, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(timeCounter))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(detectedObjects)))
-                .addContainerGap(121, Short.MAX_VALUE))
+        jButtonAttData.setText("Atualizar Dados");
+        jButtonAttData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAttDataActionPerformed(evt);
+            }
+        });
+
+        checkBoxDistancia.setLabel("Distância");
+
+        checkBoxSize.setLabel("Tamanho");
+
+        checkBoxVelocity.setLabel("Velocidade");
+
+        checkBoxHazard.setLabel("Risco");
+
+        jButtonFilter.setLabel("Filtrar");
+        jButtonFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFilterActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanelDashLayout = new javax.swing.GroupLayout(jPanelDash);
+        jPanelDash.setLayout(jPanelDashLayout);
+        jPanelDashLayout.setHorizontalGroup(
+            jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelDashLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(jPanelDashLayout.createSequentialGroup()
+                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanelDashLayout.createSequentialGroup()
+                                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(timeCounter))
+                            .addGroup(jPanelDashLayout.createSequentialGroup()
+                                .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(detectedObjects)))
+                        .addGap(160, 160, 160)
+                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanelDashLayout.createSequentialGroup()
+                                .addComponent(jButtonFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(checkBoxDistancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(checkBoxSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(checkBoxVelocity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButtonAttData, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(322, Short.MAX_VALUE))))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(timeCounter))
+        jPanelDashLayout.setVerticalGroup(
+            jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelDashLayout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(timeCounter))
+                    .addComponent(jButtonAttData))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(detectedObjects))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1)
-                .addGap(18, 18, 18))
+                .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelDashLayout.createSequentialGroup()
+                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanelDashLayout.createSequentialGroup()
+                                    .addGap(3, 3, 3)
+                                    .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(detectedObjects)))
+                                .addGroup(jPanelDashLayout.createSequentialGroup()
+                                    .addComponent(jButtonFilter)
+                                    .addGap(3, 3, 3)))
+                            .addComponent(checkBoxDistancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(checkBoxVelocity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
+                        .addGap(18, 18, 18))
+                    .addGroup(jPanelDashLayout.createSequentialGroup()
+                        .addComponent(checkBoxSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         timeCounter.getAccessibleContext().setAccessibleName("TimeCounter");
         label1.getAccessibleContext().setAccessibleName("Timer");
         label2.getAccessibleContext().setAccessibleName("objDetectedLabel");
+        jButtonAttData.getAccessibleContext().setAccessibleName("jButtonAttData");
+        jButtonFilter.getAccessibleContext().setAccessibleName("jButtonFilter");
 
         jMenu1.setText("Arquivo");
 
@@ -168,6 +265,11 @@ public class TelaInicial extends javax.swing.JFrame {
         jMenu2.setText("Dados");
 
         jMenuItem4.setText("Atualizar Dados");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemAtualizarDadosActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem4);
 
         jMenuItem5.setText("Resultados");
@@ -193,68 +295,87 @@ public class TelaInicial extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addComponent(jPanelDash, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addComponent(jPanelDash, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItemDashboard(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemDashboard
+
+    }//GEN-LAST:event_jMenuItemDashboard
+
+    private void jMenuItemAtualizarDadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAtualizarDadosActionPerformed
+
+    }//GEN-LAST:event_jMenuItemAtualizarDadosActionPerformed
+
+    private void jButtonAttDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAttDataActionPerformed
         NeoApi api = new NeoApi();
         NeoFeed data;
 
         try {
             String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             System.out.println(currentDate);
+
+            String limitDateApi = LocalDate.now().minusDays(7).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            System.out.println(currentDate);
+            System.out.println(limitDateApi);
             //Limite de data da API parece ser 7 Dias senão da erro
-            data = api.buscarDados("2024-06-11", currentDate);
+            data = api.buscarDados(limitDateApi, currentDate);
             System.out.println(data.toString());
             System.out.println("Objetos detectados: " + data.getCount());
             detectedObjects.setText(String.valueOf(data.getCount()));
 
-            List<NearEarthObject> objects = data.getNearEarthObjects().get(currentDate);
-            NearEarthObjectDao daoObjects = new NearEarthObjectDao();
-            
-            try {
-                daoObjects.salvarLista(objects);
-            } catch (SQLException ex) {
-                Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+            Map<String, List<NearEarthObject>> map = data.getNearEarthObjects();
+
+            for (String currDate : map.keySet()) {
+                List<NearEarthObject> objects = data.getNearEarthObjects().get(currDate);
+                try {
+                    daoObjects.saveList(objects);
+                } catch (SQLException ex) {
+                    Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
 
-            System.out.println(objects);
-
-            DefaultTableModel tableModel = new DefaultTableModel();
-            jTableNearObjects.setModel(tableModel);
-
-            tableModel.addColumn("ID");
-            tableModel.addColumn("Nome");
-            tableModel.addColumn("Magnitude");
-            //TODO Acho que o que ele pede não é a magnitude e sim distancia, tem que ver ainda como extrair isso da API
-            for (int x = 0; x < objects.size(); x++) {
-                tableModel.insertRow(x, new Object[]{objects.get(x).getId(),
-                    objects.get(x).getName(),
-                    String.valueOf(objects.get(x).getAbsoluteMagnitudeH())});
-            }
+            this.loadDataFromDB();
 
         } catch (IOException ex) {
             Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }//GEN-LAST:event_jButtonAttDataActionPerformed
 
-        jPanel2.setVisible(true);
-
-    }//GEN-LAST:event_jMenuItemDashboard
+    private void jButtonFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFilterActionPerformed
+        if (checkBoxDistancia.getState()) {
+            System.out.println("distancia enabled");
+        }
+        if (checkBoxHazard.getState()) {
+            System.out.println("risco enabled");
+        }
+        if (checkBoxSize.getState()) {
+            System.out.println("tamanho enabled");
+        }
+        if (checkBoxVelocity.getState()) {
+            System.out.println("velocidade enabled");
+        }
+    }//GEN-LAST:event_jButtonFilterActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private java.awt.Checkbox checkBoxDistancia;
+    private java.awt.Checkbox checkBoxHazard;
+    private java.awt.Checkbox checkBoxSize;
+    private java.awt.Checkbox checkBoxVelocity;
     private javax.swing.JLabel detectedObjects;
+    private javax.swing.JButton jButtonAttData;
+    private javax.swing.JButton jButtonFilter;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -267,7 +388,7 @@ public class TelaInicial extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanelDash;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableNearObjects;
     private java.awt.Label label1;
