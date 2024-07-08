@@ -15,9 +15,9 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import trabalho.dao.NearEarthObjectDao;
-import trabalho.dto.NearEarthObject;
-import trabalho.dto.NeoApi;
-import trabalho.dto.NeoFeed;
+import trabalho.model.NearEarthObject;
+import trabalho.model.NeoApi;
+import trabalho.model.NeoFeed;
 //import trabalho.dto.NeoObject;;
 
 /*

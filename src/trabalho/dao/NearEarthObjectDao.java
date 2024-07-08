@@ -11,12 +11,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import trabalho.dto.AproachData;
-import trabalho.dto.Diameter;
-import trabalho.dto.MissDistance;
-import trabalho.dto.NearEarthObject;
-import trabalho.dto.Velocity;
-import trabalho.dto.Kilometers;
+import trabalho.model.AproachData;
+import trabalho.model.Diameter;
+import trabalho.model.MissDistance;
+import trabalho.model.NearEarthObject;
+import trabalho.model.Velocity;
+import trabalho.model.Kilometers;
 
 /**
  *
