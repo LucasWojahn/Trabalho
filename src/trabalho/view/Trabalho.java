@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
-import trabalho.view.TelaInicial;
+import trabalho.view.TelaInicialView;
 
 /**
  *
@@ -22,7 +22,7 @@ public class Trabalho {
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() -> {
-            TelaInicial dash = new TelaInicial();
+            TelaInicialView dash = new TelaInicialView();
             dash.setVisible(true);
         });
 

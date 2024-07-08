@@ -28,7 +28,7 @@ import trabalho.model.NeoFeed;
  *
  * @author lucas.wojahn
  */
-public class TelaInicial extends javax.swing.JFrame {
+public class TelaInicialView extends javax.swing.JFrame {
 
     private volatile boolean running = true;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
@@ -37,7 +37,7 @@ public class TelaInicial extends javax.swing.JFrame {
     /**
      * Creates new form Dashboard
      */
-    public TelaInicial() {
+    public TelaInicialView() {
         initComponents();
         loadDataFromDB();
         new Thread(this::updateLabel).start();
@@ -65,7 +65,7 @@ public class TelaInicial extends javax.swing.JFrame {
             this.mountTableWithData(objects);
 
         } catch (SQLException ex) {
-            Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -92,7 +92,8 @@ public class TelaInicial extends javax.swing.JFrame {
                 objects.get(x).getDiameter().getKilometer().getMin(),
                 objects.get(x).getDiameter().getKilometer().getMax(),
                 objects.get(x).getAproachData().get(0).getVelocity().getKmH(),
-                objects.get(x).getAproachData().get(0).getVelocity().getKmS(),});
+                objects.get(x).getAproachData().get(0).getVelocity().getKmS(),
+                objects.get(x).isIsPotentiallyHazardousAsteroid(),});
         }
     }
 
@@ -103,7 +104,7 @@ public class TelaInicial extends javax.swing.JFrame {
             this.mountTableWithData(objects);
 
         } catch (SQLException ex) {
-            Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -142,7 +143,7 @@ public class TelaInicial extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItemAbout = new javax.swing.JMenuItem();
 
         jMenu3.setText("jMenu3");
 
@@ -315,8 +316,13 @@ public class TelaInicial extends javax.swing.JFrame {
 
         jMenu5.setText("Ajuda");
 
-        jMenuItem6.setText("Sobre");
-        jMenu5.add(jMenuItem6);
+        jMenuItemAbout.setText("Sobre");
+        jMenuItemAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemAboutActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItemAbout);
 
         jMenuBar1.add(jMenu5);
 
@@ -374,14 +380,14 @@ public class TelaInicial extends javax.swing.JFrame {
                 try {
                     daoObjects.saveList(objects);
                 } catch (SQLException ex) {
-                    Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
             this.loadDataFromDB();
 
         } catch (IOException ex) {
-            Logger.getLogger(TelaInicial.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonAttDataActionPerformed
 
@@ -417,6 +423,11 @@ public class TelaInicial extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBoxModeActionPerformed
 
+    private void jMenuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAboutActionPerformed
+        SobreView aboutFrame = new SobreView();
+        aboutFrame.setVisible(true);
+    }//GEN-LAST:event_jMenuItemAboutActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Checkbox checkBoxDistancia;
@@ -438,7 +449,7 @@ public class TelaInicial extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItemAbout;
     private javax.swing.JPanel jPanelDash;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableNearObjects;
