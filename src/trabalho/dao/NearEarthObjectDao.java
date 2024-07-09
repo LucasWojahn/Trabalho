@@ -65,9 +65,9 @@ public class NearEarthObjectDao {
                 + "neo_id = VALUES(neo_id),\n"
                 + "kilometers = VALUES(kilometers),\n"
                 + "kilometers_hour = VALUES(kilometers_hour),\n"
-                + "kilometers_second = VALUES(kilometers_second),\n"                
+                + "kilometers_second = VALUES(kilometers_second),\n"
                 + "approach_date = VALUES(approach_date)";
-        
+
         try (PreparedStatement aproachStatement = conn.prepareStatement(aproachSql)) {
             for (AproachData ad : neo.getAproachData()) {
                 aproachStatement.setString(1, neo.getId());
@@ -77,9 +77,9 @@ public class NearEarthObjectDao {
                 aproachStatement.setDate(5, java.sql.Date.valueOf(LocalDate.parse(ad.getAproachDate())));
 
                 if (ad.getMissDistance() == null || ad.getMissDistance().getKilometers() == null) {
-                    aproachStatement.setNull(3, java.sql.Types.DOUBLE);
+                    aproachStatement.setNull(2, java.sql.Types.DOUBLE);
                 } else {
-                    aproachStatement.setDouble(3, Double.parseDouble(ad.getMissDistance().getKilometers()));
+                    aproachStatement.setDouble(2, Double.parseDouble(ad.getMissDistance().getKilometers()));
                 }
 
                 aproachStatement.executeUpdate();
@@ -117,6 +117,25 @@ public class NearEarthObjectDao {
         try (java.sql.Connection conn = Connection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql); ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 neos.add(this.builObjectFromSet(resultSet));
+            }
+        }
+
+        return neos;
+    }
+
+    public List<NearEarthObject> findSearch(String search) throws SQLException {
+        List<NearEarthObject> neos = new ArrayList<>();
+        String sql = "SELECT * FROM NearEarthObject neo JOIN AproachData ad ON neo.id = ad.neo_id WHERE neo.id = ? OR neo.name = ?";
+
+        try (java.sql.Connection conn = Connection.getConnection(); PreparedStatement statement = conn.prepareStatement(sql)) {
+
+            statement.setString(1, search);
+            statement.setString(2, search);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    neos.add(this.builObjectFromSet(resultSet));
+                }
             }
         }
 

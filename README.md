@@ -12,8 +12,6 @@ Este projeto Java fornece uma ferramenta para rastrear e analisar objetos próxi
 * Armazene dados NEO em um banco de dados local para acesso offline.
 * Exiba informações do NEO em uma interface amigável.
 
-![Tela Principal](/tela_inicial.png)
-
 ## Características
 
 * **Busca de dados:** Busca dados NEO da API da NASA usando os endpoints fornecidos.
@@ -22,8 +20,14 @@ Este projeto Java fornece uma ferramenta para rastrear e analisar objetos próxi
 * **Interface do usuário:** Apresenta dados NEO em uma interface gráfica usando componentes Java Swing (tabelas, botões, etc.).
 * **Tratamento de erros:** inclui mecanismos de tratamento de erros para gerenciar problemas como problemas de conectividade de rede ou dados inválidos.
 
+## Tela Inicial
+![Tela Principal](/tela_inicial.png)
+
+## Gráficos
+![Tela Principal](/grafico.png)
+
 ## Estutura de pastas
-![Tela Principal](/estrutura_pastas.png)
+![Tela pASTAS](/estrutura_pastas.png)
 
 ## Uso
 

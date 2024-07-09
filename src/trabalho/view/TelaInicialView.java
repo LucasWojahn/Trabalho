@@ -1,5 +1,6 @@
 package trabalho.view;
 
+import java.awt.Panel;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -10,13 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import org.knowm.xchart.*;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import trabalho.dao.NearEarthObjectDao;
 import trabalho.model.NearEarthObject;
-import trabalho.model.NeoApi;
+import trabalho.dao.NeoApi;
 import trabalho.model.NeoFeed;
 //import trabalho.dto.NeoObject;;
 
@@ -48,7 +52,7 @@ public class TelaInicialView extends javax.swing.JFrame {
         while (running) {
             SwingUtilities.invokeLater(() -> timeCounter.setText(dtf.format(LocalDateTime.now())));
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 System.out.println("Erro ao atualizar data");
                 System.out.println(e);
@@ -66,6 +70,7 @@ public class TelaInicialView extends javax.swing.JFrame {
 
         } catch (SQLException ex) {
             Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(rootPane, "Erro ao conectar no banco de dados", "ERRO", JOptionPane.ERROR_MESSAGE);
         }
 
     }
@@ -105,6 +110,7 @@ public class TelaInicialView extends javax.swing.JFrame {
 
         } catch (SQLException ex) {
             Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(rootPane, "Erro ao conectar no banco e ordenar dados", "ERRO", JOptionPane.ERROR_MESSAGE);
         }
 
     }
@@ -134,6 +140,9 @@ public class TelaInicialView extends javax.swing.JFrame {
         checkBoxHazard = new java.awt.Checkbox();
         jButtonFilter = new javax.swing.JButton();
         jComboBoxMode = new javax.swing.JComboBox<>();
+        jButtonSearch = new javax.swing.JButton();
+        jTextFieldSearch = new javax.swing.JTextField();
+        jButtonGraph = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -141,7 +150,7 @@ public class TelaInicialView extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
+        jMenuConfiguracoes = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
         jMenuItemAbout = new javax.swing.JMenuItem();
 
@@ -203,6 +212,28 @@ public class TelaInicialView extends javax.swing.JFrame {
             }
         });
 
+        jButtonSearch.setText("Buscar");
+        jButtonSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSearchActionPerformed(evt);
+            }
+        });
+
+        jTextFieldSearch.setText("ID ou Nome");
+        jTextFieldSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldSearchActionPerformed(evt);
+            }
+        });
+
+        jButtonGraph.setText("Gerar Gráfico");
+        jButtonGraph.setActionCommand("");
+        jButtonGraph.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGraphActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelDashLayout = new javax.swing.GroupLayout(jPanelDash);
         jPanelDash.setLayout(jPanelDashLayout);
         jPanelDashLayout.setHorizontalGroup(
@@ -214,65 +245,66 @@ public class TelaInicialView extends javax.swing.JFrame {
                     .addGroup(jPanelDashLayout.createSequentialGroup()
                         .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanelDashLayout.createSequentialGroup()
-                                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(2, 2, 2)
                                 .addComponent(timeCounter))
                             .addGroup(jPanelDashLayout.createSequentialGroup()
                                 .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(detectedObjects)))
-                        .addGap(160, 160, 160)
+                        .addGap(74, 74, 74)
                         .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanelDashLayout.createSequentialGroup()
-                                .addComponent(jButtonFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButtonAttData, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonGraph, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanelDashLayout.createSequentialGroup()
+                                .addComponent(jButtonFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(23, 23, 23)
                                 .addComponent(checkBoxDistancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(checkBoxSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(checkBoxVelocity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jButtonAttData, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(240, Short.MAX_VALUE))))
+                                .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(10, 10, 10)
+                        .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                        .addComponent(jButtonSearch)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextFieldSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24))))
         );
         jPanelDashLayout.setVerticalGroup(
             jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelDashLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(timeCounter))
-                    .addComponent(jButtonAttData))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(12, 12, 12)
+                .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(timeCounter)
+                    .addComponent(jButtonAttData)
+                    .addComponent(jButtonGraph)
+                    .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(13, 13, 13)
                 .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelDashLayout.createSequentialGroup()
-                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(jPanelDashLayout.createSequentialGroup()
-                                        .addGap(3, 3, 3)
-                                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(detectedObjects)))
-                                    .addGroup(jPanelDashLayout.createSequentialGroup()
-                                        .addComponent(jButtonFilter)
-                                        .addGap(3, 3, 3)))
-                                .addComponent(checkBoxDistancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(checkBoxVelocity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(checkBoxHazard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanelDashLayout.createSequentialGroup()
-                                .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(6, 6, 6)))
-                        .addGap(24, 24, 24)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
-                        .addGap(18, 18, 18))
-                    .addGroup(jPanelDashLayout.createSequentialGroup()
-                        .addComponent(checkBoxSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(detectedObjects)))
+                    .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jButtonFilter, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanelDashLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jComboBoxMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonSearch)
+                            .addComponent(jTextFieldSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(checkBoxDistancia, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(checkBoxSize, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(checkBoxVelocity, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(checkBoxHazard, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(24, 24, 24)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
         );
 
         timeCounter.getAccessibleContext().setAccessibleName("TimeCounter");
@@ -311,8 +343,13 @@ public class TelaInicialView extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
-        jMenu4.setText("Configurações");
-        jMenuBar1.add(jMenu4);
+        jMenuConfiguracoes.setText("Configurações");
+        jMenuConfiguracoes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuConfiguracoesMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(jMenuConfiguracoes);
 
         jMenu5.setText("Ajuda");
 
@@ -381,6 +418,7 @@ public class TelaInicialView extends javax.swing.JFrame {
                     daoObjects.saveList(objects);
                 } catch (SQLException ex) {
                     Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(rootPane, "Erro ao conectar no banco de dados", "ERRO", JOptionPane.ERROR_MESSAGE);
                 }
             }
 
@@ -388,6 +426,7 @@ public class TelaInicialView extends javax.swing.JFrame {
 
         } catch (IOException ex) {
             Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(rootPane, "Erro ao tentar obter informações da NASA", "ERRO", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButtonAttDataActionPerformed
 
@@ -428,6 +467,71 @@ public class TelaInicialView extends javax.swing.JFrame {
         aboutFrame.setVisible(true);
     }//GEN-LAST:event_jMenuItemAboutActionPerformed
 
+    private void jButtonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSearchActionPerformed
+
+        try {
+            String searchText = jTextFieldSearch.getText();
+            if (searchText.isBlank()) {
+                this.loadDataFromDB();
+            } else {
+                List<NearEarthObject> objects = daoObjects.findSearch(searchText);
+                this.mountTableWithData(objects);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_jButtonSearchActionPerformed
+
+    private void jTextFieldSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldSearchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldSearchActionPerformed
+
+    private void jButtonGraphActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGraphActionPerformed
+        NeoApi api = new NeoApi();
+        NeoFeed data;
+
+        try {
+            String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            System.out.println(currentDate);
+
+            String limitDateApi = LocalDate.now().minusDays(7).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            System.out.println(currentDate);
+            System.out.println(limitDateApi);
+
+            data = api.buscarDados(limitDateApi, currentDate);
+            detectedObjects.setText(String.valueOf(data.getCount()));
+
+            Map<String, List<NearEarthObject>> map = data.getNearEarthObjects();
+
+            CategoryChart chart = new CategoryChartBuilder().width(1000).height(800).title("Objetos encontrados por dia").xAxisTitle("Dia").yAxisTitle("Quantidade").build();
+
+            List<String> xData = new ArrayList<>(map.keySet());
+            List<Integer> yData = new ArrayList<>();
+            
+            for (String key : map.keySet()) {
+                yData.add(map.get(key).size());
+            }
+
+            chart.addSeries("Quantidade Objetos", xData, yData);
+
+            XChartPanel<CategoryChart> chartPanel = new XChartPanel<>(chart);
+            JFrame frame = new JFrame("Gráfico");
+            frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            frame.add(chartPanel);
+            frame.pack();
+            frame.setVisible(true);
+
+        } catch (IOException ex) {
+            Logger.getLogger(TelaInicialView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButtonGraphActionPerformed
+
+    private void jMenuConfiguracoesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuConfiguracoesMouseClicked
+        ConfiguracoesView configFrame = new ConfiguracoesView();
+        configFrame.setVisible(true);
+    }//GEN-LAST:event_jMenuConfiguracoesMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Checkbox checkBoxDistancia;
@@ -437,13 +541,15 @@ public class TelaInicialView extends javax.swing.JFrame {
     private javax.swing.JLabel detectedObjects;
     private javax.swing.JButton jButtonAttData;
     private javax.swing.JButton jButtonFilter;
+    private javax.swing.JButton jButtonGraph;
+    private javax.swing.JButton jButtonSearch;
     private javax.swing.JComboBox<String> jComboBoxMode;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenuConfiguracoes;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
@@ -453,6 +559,7 @@ public class TelaInicialView extends javax.swing.JFrame {
     private javax.swing.JPanel jPanelDash;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableNearObjects;
+    private javax.swing.JTextField jTextFieldSearch;
     private java.awt.Label label1;
     private java.awt.Label label2;
     private javax.swing.JLabel timeCounter;
